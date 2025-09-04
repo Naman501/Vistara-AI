@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,11 +19,26 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" >
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+         <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+
+            <main className="min-h-screen">
+            {children}
+            </main>
+            <footer className="bg-muted/50 py-12 ">
+              <div className="container mx-auto">
+                <p>Made By Naman Mittal</p>
+              </div>
+            </footer>
+          </ThemeProvider>
       </body>
     </html>
   );
