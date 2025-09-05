@@ -4,7 +4,11 @@ const nextConfig = {
      remotePatterns:[
         {
             protocol:"https",
-            hostname:"randomuser.me"
+            hostname:"randomuser.me" 
+        },
+        {
+            protocol:"https",
+            hostname:"www.juit.ac.in" 
         }
     ]
    }
