@@ -2,7 +2,7 @@
 import { onboardingSchema } from "@/app/lib/schema"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"; 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -22,11 +22,33 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import useFetch from "@/hooks/use-fetch";
+import { updateUser } from "@/actions/user";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 const OnboardingForm = ({industries}) => {
+  
+  
+  const [selectedIndustry, setSelectedIndustry] = useState(null);
+  const router=useRouter();
+  
+  const {
+    loading:updaateLoading,
+    fn:updateUserFn,
+    data:updateResult
+  }=useFetch(updateUser)
+  
+ useEffect(() => {
+  if (updateResult?.success && !updaateLoading) {
+    toast.success("Profile Completed Successfully!");
+    setTimeout(() => {
+      router.push("/dashboard");
+      router.refresh();
+    }, 1200); // wait 1.2s before redirect
+  }
+}, [updaateLoading, updateResult, router]);
 
-const [selectedIndustry, setSelectedIndustry] = useState(null);
-const router=useRouter();
 
   const {register,handleSubmit,formState:{errors},setValue,watch,
 } =useForm({
@@ -36,7 +58,32 @@ const router=useRouter();
 const watchIndustry=watch("industry")
 
 const onSubmit=async (values)=>{
-console.log(values);
+  
+  try {
+    // console.log(values);
+    const formattedIndustry =`${values.industry}-${values.subIndustry
+    .toLowerCase()
+    .replace(/ /g,"-")}`;
+
+    await updateUserFn({
+      ...values,
+      industry:formattedIndustry,
+    })
+} catch (error) {
+  console.error(error)
+}
+
+
+// useEffect(() => {
+
+// if(updateResult?.success && !updaateLoading){
+//   toast.success("Profile Completed Successfully!")
+//   router.push("/dashboard");
+//   router.refresh();
+// }
+
+// }, [updaateLoading,updateResult])
+
 
 }
 
@@ -92,7 +139,7 @@ onValueChange={(value)=>{
  <div className="space-y-2" >
 <Label  htmlFor="subIndustry">Specialization</Label>
 <Select 
-{...register("industry")}
+{...register("subIndustry")}
 onValueChange={(value)=>{
   setValue("subIndustry",value);
 }}
@@ -163,11 +210,16 @@ onValueChange={(value)=>{
               )}
             </div>
 
-             <Button type="submit" className="w-full" >
-             Complete Profile
+            <Button type="submit" className="w-full" disabled={updaateLoading}>
+              {updaateLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Complete Profile"
+              )}
             </Button>
-
-   
     </form>
   </CardContent>
 </Card>
