@@ -45,7 +45,7 @@ const OnboardingForm = ({industries}) => {
     setTimeout(() => {
       router.push("/dashboard");
       router.refresh();
-    }, 1200); // wait 1.2s before redirect
+    }); 
   }
 }, [updaateLoading, updateResult, router]);
 
