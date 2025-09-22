@@ -82,12 +82,12 @@ model IndustryInsight {
   salaryRanges  Json[]    // Array of { role: string, min: float, max: float, median: float, location: string? }
   
   // Industry trends
-  growthRate    Float     // Industry growth rate
-  demandLevel   String    // "High", "Medium", "Low"
+  growthRate    Float?     // Industry growth rate
+  demandLevel   String ?   // "High", "Medium", "Low"
   topSkills     String[]  // Most in-demand skills
   
   // Market conditions
-  marketOutlook String    // "Positive", "Neutral", "Negative"
+  marketOutlook String?    // "Positive", "Neutral", "Negative"
   keyTrends     String[]  // Array of current industry trends
   
   // Learning suggestions

@@ -39,23 +39,16 @@ const OnboardingForm = ({industries}) => {
     data:updateResult
   }=useFetch(updateUser)
   
- useEffect(() => {
-  if (updateResult?.success && !updaateLoading) {
-    toast.success("Profile Completed Successfully!");
-    setTimeout(() => {
-      router.push("/dashboard");
-      router.refresh();
-    }); 
-  }
-}, [updaateLoading, updateResult, router]);
+  
 
-
+  
   const {register,handleSubmit,formState:{errors},setValue,watch,
 } =useForm({
   resolver : zodResolver(onboardingSchema)
 })
 
-const watchIndustry=watch("industry")
+
+
 
 const onSubmit=async (values)=>{
   
@@ -72,20 +65,20 @@ const onSubmit=async (values)=>{
 } catch (error) {
   console.error(error)
 }
-
-
-// useEffect(() => {
-
-// if(updateResult?.success && !updaateLoading){
-//   toast.success("Profile Completed Successfully!")
-//   router.push("/dashboard");
-//   router.refresh();
-// }
-
-// }, [updaateLoading,updateResult])
-
-
 }
+
+  useEffect(() => {
+   if (updateResult?.success && !updaateLoading) {
+     toast.success("Profile Completed Successfully!");
+     setTimeout(() => {
+       router.push("/dashboard");
+       router.refresh();
+     }); 
+   }
+ }, [updaateLoading, updateResult, router]);
+
+const watchIndustry=watch("industry")
+
 
   return (
     <>
