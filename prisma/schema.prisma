@@ -1,12 +1,22 @@
+// generator client {
+//   provider = "prisma-client-js"
+//   output   = "../node_modules/.prisma/client"
+// }
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
-   output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 
 model User {
   id            String    @id @default(uuid())
@@ -82,12 +92,12 @@ model IndustryInsight {
   salaryRanges  Json[]    // Array of { role: string, min: float, max: float, median: float, location: string? }
   
   // Industry trends
-  growthRate    Float?     // Industry growth rate
-  demandLevel   String ?   // "High", "Medium", "Low"
+  growthRate    Float     // Industry growth rate
+  demandLevel   String    // "High", "Medium", "Low"
   topSkills     String[]  // Most in-demand skills
   
   // Market conditions
-  marketOutlook String?    // "Positive", "Neutral", "Negative"
+  marketOutlook String    // "Positive", "Neutral", "Negative"
   keyTrends     String[]  // Array of current industry trends
   
   // Learning suggestions
