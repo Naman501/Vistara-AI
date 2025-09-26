@@ -408,9 +408,9 @@ const DashboardView = ({ insights }) => {
                     return null;
                   }}
                 />
-                <Bar dataKey="min" fill="#93c5fd" name="Min Salary (LPA)" />
-                <Bar dataKey="median" fill="#60a5fa" name="Median Salary (LPA)" />
-                <Bar dataKey="max" fill="#2563eb" name="Max Salary (LPA)" />
+                <Bar dataKey="min" fill="#00C9A7" name="Min Salary (LPA)" />
+                <Bar dataKey="median" fill="#FFC857" name="Median Salary (LPA)" />
+                <Bar dataKey="max" fill="#3A86FF" name="Max Salary (LPA)" />
               </BarChart>
             </ResponsiveContainer>
           </div>
