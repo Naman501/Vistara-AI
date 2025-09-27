@@ -2,7 +2,9 @@ import React from 'react'
 
 const InterviewPage = () => {
   return (
-    <div>InterviewPage</div>
+    <div>
+      
+    </div>
   )
 }
 
