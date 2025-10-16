@@ -1,6 +1,6 @@
 "use client"
 import { Button } from '@/components/ui/button'
-import { AlertTriangle, Download, Edit, Monitor, Save } from 'lucide-react'
+import { AlertTriangle, Download, Edit, Loader2, Monitor, Save } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Controller, useForm } from 'react-hook-form'
@@ -13,8 +13,14 @@ import { Textarea } from '@/components/ui/textarea'
 import EntryForm from './entry-form'
 import { entriesToMarkdown } from '@/app/lib/helper'
 import { useUser } from '@clerk/nextjs'
-import MDEditor from "@uiw/react-md-editor";
+import MDEditor, { issue } from "@uiw/react-md-editor";
 import { toast } from 'sonner'
+// import html2pdf from 'html2pdf.js'
+// import html2pdf from "html2pdf.js/dist/html2pdf.min.js";
+// import html2pdfMin from 'html2pdf.js/dist/html2pdf.min.js'
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+
 
 const ResumeBuilder = ({initialContent}) => {
 
@@ -22,7 +28,9 @@ const [activetab,setActiveTab]=useState("edit");
 const [resumeMode,setResumeMode]=useState("preview");
 const [previewContent,setPreviewContent]=useState(initialContent);
 
-const {user}=useUser()
+const {user}=useUser();
+
+const [isGenerating,setIsGenerating]=useState(false); 
 
 const {
     control,
@@ -105,8 +113,137 @@ const getCombinedContent=()=>{
 }
 
 const onsubmit= async (data)=>{
+    // console.log(data);
+     try {
+            const formattedContent = previewContent
+                .replace(/\n/g, "\n")
+                .replace(/\n\s*\n/g, "\n\n")
+                .trim();
 
+            console.log(previewContent, formattedContent);
+            await saveResumeFn(previewContent);
+        } catch (error) {
+            console.error("Save error:", error);
+        }
+    
 }
+
+const generatePDF = ()=>{
+  setIsGenerating(true);
+
+  try {
+    const doc = new jsPDF();
+            doc.setFontSize(22);
+            doc.text(formValues?.name || '', 105, 20, { align: "center" });
+
+            let contactDetails = [];
+            if (formValues.contactInfo.mobile)
+                contactDetails.push(`Ph: ${formValues.contactInfo.mobile}`);
+            if (formValues.contactInfo.email)
+                contactDetails.push(`Email: ${formValues.contactInfo.email}`);
+            if (formValues.contactInfo.linkedin)
+                contactDetails.push(`LinkedIn: ${formValues.contactInfo.linkedin}`);
+
+            if (contactDetails.length) {
+                doc.setFontSize(12);
+                doc.text(contactDetails.join(" | "), 105, 27, { align: "center" });
+            }
+
+            let y = 40;
+            const lineHeight = 6;
+            const sectionTitleFontSize = 14;
+            const baseFontSize = 12;
+            const descriptionFontSize = 10;
+
+
+            if (formValues.summary) {
+                doc.setFontSize(sectionTitleFontSize);
+                doc.setFont(undefined, 'bold');
+                doc.text("Professional Summary:", 10, y);
+                y += lineHeight;
+                doc.setFontSize(baseFontSize);
+                doc.setFont(undefined, 'normal');
+                const splitText = doc.splitTextToSize(formValues.summary, 180);
+                splitText.forEach(line => {
+                    doc.text(line, 10, y);
+                    y += lineHeight;
+                });
+                // y += lineHeight;
+                y += 2; // Reduce space before line
+                doc.line(10, y, 200, y);
+                // doc.line(12, y+10, 202, y+2);
+                y += lineHeight;
+            }
+
+            if (formValues.skills) {
+                doc.setFontSize(sectionTitleFontSize);
+                doc.setFont(undefined, 'bold');
+                y+=2;
+                doc.text("Skills:", 10, y);
+                y += lineHeight;
+                doc.setFontSize(baseFontSize);
+                doc.setFont(undefined, 'normal');
+                const splitText = doc.splitTextToSize(formValues.skills, 180);
+                splitText.forEach(line => {
+                    doc.text(line, 10, y);
+                    y += lineHeight;
+                });
+                // y += lineHeight;
+                y += 2; // Reduce space before line
+                doc.line(10, y, 200, y);
+                y += lineHeight;
+            }
+
+            const addSection = (title, data) => {
+                if (data && data.length) {
+                    doc.setFontSize(sectionTitleFontSize);
+                    doc.setFont(undefined, 'bold');
+                    y+=2;
+                    doc.text(title, 10, y);
+                    y += lineHeight;
+                    doc.setFontSize(baseFontSize);
+                    doc.setFont(undefined, 'normal');
+                    data.forEach((item, index) => {
+                        const endDate = item.current ? "Present" : item.endDate;
+                        const text = `${item.title} @ ${item.organization} (${item.startDate} - ${endDate})`;
+                        const description = `${item.description}`;
+                        const splitText = doc.splitTextToSize(text, 180);
+                        splitText.forEach(line => {
+                            doc.text(line, 10, y);
+
+                            y += lineHeight;
+                            // if (description) {
+                            //     doc.text(`${description}`, 10, y);
+                            //     y += lineHeight;
+                            // }
+                        });
+                        doc.setFontSize(descriptionFontSize);
+                        const splitDescription = doc.splitTextToSize(item.description, 180);
+                        splitDescription.forEach(line => {
+                            doc.text(line, 10, y);
+                                y += lineHeight;
+                            });
+                        doc.setFontSize(baseFontSize)
+                    });
+                    // y += lineHeight;
+                    y += 2; // Reduce space before line
+                    doc.line(10, y, 200, y);
+                    y += lineHeight;
+                }
+            };
+
+            addSection("Experience:", formValues.experience);
+            addSection("Education:", formValues.education);
+            addSection("Projects:", formValues.projects);
+
+            doc.save("resume.pdf");
+  } catch (error) {
+    console.error("PDF generation error",error);
+  } finally{
+    setIsGenerating(false);
+  }
+}
+
 
   return (
     <div className='space-y-4'>
@@ -118,12 +255,41 @@ const onsubmit= async (data)=>{
             >Resume Builder</h1>
 
             <div className='space-x-2'>
-                <Button variant="destructive">
-                    <Save className='h-4 w-4'/>
-                    Save</Button>
-                     <Button variant="outline">
-                    <Download className='h-4 w-4'/>
-                    Download PDF</Button>
+                <Button variant="destructive"
+                onClick={onsubmit}
+                disabled={isSaving}
+                className="cursor-pointer"
+                >
+                  {
+                    isSaving ? (
+                      <>
+                      <Loader2  className='mr-2 h-4 w-4 animate-spin'/>
+                      Saving...
+                      </>
+                    ) :(
+                      <>
+                        <Save className='h-4 w-4'/>
+                    Save
+                      </>
+                    )
+                  }
+                    </Button>
+                     <Button onClick={generatePDF}  disabled={isGenerating}>
+                    {
+                      isGenerating ? (
+                        <>
+                       <Loader2 className='h-4 w-4 animate-spin' /> 
+                       Generating PDF...
+                        </>
+                      ) : (
+                        <>
+                        <Download className='h-4 w-4'/>
+                    Download PDF
+                        </>
+                      )
+                    }
+                    
+                    </Button>
             </div>
         </div>
 
@@ -136,7 +302,7 @@ const onsubmit= async (data)=>{
     <TabsTrigger value="preview">Markdown</TabsTrigger>
   </TabsList>
   <TabsContent value="edit">
-    <form className='space-y-6' onSubmit={handleSubmit(onsubmit)}>
+    <form className='space-y-6'>
         <div className='space-y-2'>
             <h3 className='text-lg mt-3 font-medium'>
                 Contact Information
