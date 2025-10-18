@@ -43,22 +43,33 @@ By leveraging advanced AI capabilities, Vistara offers intelligent features such
 
 ## 📁 Project Structure (High-Level)
 
-Vistara-AI
-app/: Contains the application's routes and pages, including sections for:
-cover-letter/
-dashboard/
-interview/
-onboarding/
-resume/
-components/: Reusable UI components.
-utils/: Utility functions.
-pages/api/: API routes for server-side logic.
-prisma/: Prisma schema and migrations.
-inngest/: Inngest functions for background tasks.
-middleware.ts: Authentication middleware for route protection.
-package.json: Project dependencies.
+## Technology Stack
 
----
+* **Next.js:** Frontend framework.  
+* **React:** JavaScript library for building UI.  
+* **Prisma:** ORM for database interactions.  
+* **Clerk:** Authentication provider.  
+* **Tailwind CSS:** Utility-first CSS framework.  
+* **Gemini API:** Google's AI model for generating insights and content.  
+* **Inngest:** Event-driven platform for background tasks and cron jobs.  
+* **date-fns:** Library for date manipulation.  
+* **recharts:** Library for creating charts and graphs.  
+
+## Project Structure (High-Level)
+
+* **`app/`:** Contains the application's routes and pages, including sections for:
+  * `cover-letter/`
+  * `dashboard/`
+  * `interview/`
+  * `onboarding/`
+  * `resume/`
+* **`components/`:** Reusable UI components.  
+* **`utils/`:** Utility functions.  
+* **`pages/api/`:** API routes for server-side logic.  
+* **`prisma/`:** Prisma schema and migrations.  
+* **`inngest/`:** Inngest functions for background tasks.  
+* **`middleware.ts`:** Authentication middleware for route protection.  
+* **`package.json`:** Project dependencies.  
 
 ## 🚀 Development Flow
 
