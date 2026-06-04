@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from '@clerk/themes';
 import { Toaster } from "sonner";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({
   subsets: ["latin"],
